@@ -23,16 +23,16 @@ def deplacement(event, canvas, pacman):
     
     if touche == "Up":
         posY -=1
-
+        canvas.itemconfig(pacman, start = 135, extent = 270)
     elif touche == "Down":
         posY += 1
-       
+        canvas.itemconfig(pacman, start = -45, extent = 270)
     elif touche == "Right":
         posX +=1
-       
+        canvas.itemconfig(pacman, start = 45, extent = 270)
     elif touche == "Left":
         posX -=1
-       
+        canvas.itemconfig(pacman, start = 225, extent = 270)
 
     canvas.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
 
@@ -202,9 +202,10 @@ def jouer():
     #on utilise donc "lamba", une fonction qui enveloppe la fonction de déplacement
     canvas.bind("<Key>", lambda event :deplacement(event, canvas, pacman))
     carte(canvas)
-
+    
     #Création du pac man
     pacman = canvas.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = 225, extent = 270)
+    
 
     #Création des fantomes
     blinky = canvas.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fill = "red")
