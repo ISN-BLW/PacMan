@@ -36,7 +36,6 @@ def deplacement(event, canvas, pacman):
 
     canvas.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
 
-
 #Fonction gérant les déplacements aléatoires des fantômes
 def fantomes(canvas, blinky, pinky):
     global posX1, posY1, posX2, posY2
