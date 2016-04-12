@@ -2,6 +2,8 @@ from tkinter import *
 import cartePM  #on importe un autre fichier python contenant les cartes.
 import random
 
+#Variable pour la mise en route du déplacement des fonctions
+marche_fantome = False
 
 #Position de Blinky (fantôme rouge)
 posX1 = 24
@@ -17,51 +19,68 @@ posY = 48
 
 dx = 0
 dy = 0
+dx2 = 0
+dy2 = 0
+dx3 = 0
+dy3 = 0
 
 """L E S  F O N C T I O N S"""
-
+def fantome_True():
+    global marche_fantome
+    marche_fantome = True
+    canvasJ.after(200, update_fantomes)
+    
 def update_fantomes():
     global posX1, posY1, posX2, posY2
-    #On génére un nombre entre 1 et 4 pour faire varier posX1 et posY1
-    a = random.randint(1,4)
-    if a == 1:
-        posX1 += 1
 
-    elif a == 2:
-        posX1 -= 1
+    #Condition qui permet de faire fonctionner notre fonction de déplacement automatique des fantômes lorsqu'on lance une partie
+    #et qui s'annule quand on quitte le jeu
+    if marche_fantome == True:
+        #On génére un nombre entre 1 et 4 pour faire varier posX1 et posY1
+        a = random.randint(1,4)
+        if a == 1:
+            posX1 += 1
 
-    elif a== 3:
-        posY1 += 1
-        
-    else:
-        posY1 -= 1
+        elif a == 2:
+            posX1 -= 1
 
-    #Meme chose pour posX2 et posY2
-    b = random.randint(1,4)
-    if b == 1:
-        posX2 += 1
-
-    elif b ==2:
-        posX2 -= 1
-        
-    elif b== 3:
-        posY2 += 1
-        
-    else:
-        posY2 -= 1
-
+        elif a== 3:
+            posY1 += 1
             
-            
-    #On actualise les coordonnées des fantômes
-    canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
-    canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
+        else:
+            posY1 -= 1
 
+        #Meme chose pour posX2 et posY2
+        b = random.randint(1,4)
+        if b == 1:
+            posX2 += 1
+
+        elif b ==2:
+            posX2 -= 1
+            
+        elif b== 3:
+            posY2 += 1
+            
+        else:
+            posY2 -= 1
+
+                
+                
+        #On actualise les coordonnées des fantômes
+        canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
+        canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
+    #Timer de Tkinter : toutes les 200ms on appelle la fonction "update_fantomes" qui fait appel à elle meme en plus des coordonées
     canvasJ.after(200, update_fantomes)
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
+
+    
     
     touche = event.keysym
+    
     global posX, posY, Points, dx, dy
+    #les dx/dy sont des variables permettant de faire un test pour savoir si les coordonnées du pacman et celles des murs de la carte
+    #se confondent, si ce n'est pas le cas, alors on fait varier les variables de positions du pacman suivant la touche pressée.
     if touche == "Up": #haut
         dx = 0
         dy = -1
@@ -103,9 +122,9 @@ def depl(event, pacman, carteJeu):
     canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = (dy*90+abs(dy)*225)+(dx*90-abs(dx)*45), extent = 270) # on re affiche le pacman
 
 
-    
+ #Fonction pour créer la carte   
 def makeMap(carteJeu):
-
+    fantome_True()
     #Créer la carte choisie avec 2 boucles for à partir d'une liste de liste
     gameMenu_frame.grid_forget()
     game_frame.grid()
@@ -132,13 +151,15 @@ def start_game():
     gameMenu_frame.grid()
  
 def show_rules():
+    #On oublie la frame de menu pour appeler (grid) la frame du menu
     menu_frame.grid_forget()
     rules_frame.grid()
  
 def show_menu():
     #On réinitialise les positions du pacman à chaque fois que cette fonction est appelée
     #Ainsi à chaque fois que l'utilisateur est en jeu et qu'il retourne à la fenêtre principale alors les positions se réinitialisent toutes et un nouvelle partie peut débuter
-    global posX, posY, posX1, posY1, posX2, posY2
+    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome
+    marche_fantome = False
     posX = 29
     posY = 48
     posX1 = 24
@@ -152,7 +173,8 @@ def show_menu():
     for child in app.winfo_children():
         child.grid_forget()
     menu_frame.grid()
-    
+
+
    
 
 app = Tk()
@@ -215,7 +237,7 @@ pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fi
 
 
 
-canvasJ.after(200, update_fantomes)
+#canvasJ.after(200, update_fantomes)
 
 
 """R E G L E S"""
