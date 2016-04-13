@@ -230,12 +230,12 @@ return_btn = Button(gameMenu_frame, text='Retour au menu', command=show_menu)
 return_btn.grid(row = 1, column = 3, ipady = 10)
 
 #Bouton pour choisir la carte 1
-bouCarte1 = Button(gameMenu_frame, text = "Carte 1", bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte1: makeMap(cartePM.carte1))
-bouCarte1.grid(pady = 10,ipady = 5, padx = 5,  row = 1, column = 1)
+#bouCarte1 = Button(gameMenu_frame, text = "Carte 1", bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte1: makeMap(cartePM.carte1))
+#bouCarte1.grid(pady = 10,ipady = 5, padx = 5,  row = 1, column = 1)
 
 #Bouton pour choisir la carte 2
 bouCarte2 = Button(gameMenu_frame, text = "Carte 2",bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
-bouCarte2.grid(pady = 10, ipady = 5, padx = 5, row = 1, column = 2)
+bouCarte2.grid(pady = 10, ipady = 50, padx = 50, row = 1, column = 2)
 
 
 
