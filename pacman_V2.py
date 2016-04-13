@@ -19,19 +19,27 @@ posY = 48
 
 dx = 0
 dy = 0
+dx1 = 0
+dy1 = 0
 dx2 = 0
 dy2 = 0
-dx3 = 0
-dy3 = 0
+
+
+
+#Variable pour le score
+pointsScore = 0
+
 
 """L E S  F O N C T I O N S"""
 def fantome_True():
     global marche_fantome
     marche_fantome = True
     canvasJ.after(200, update_fantomes)
+
+
     
 def update_fantomes():
-    global posX1, posY1, posX2, posY2
+    global posX1, posY1, posX2, posY2, dy2, dx2
 
     #Condition qui permet de faire fonctionner notre fonction de déplacement automatique des fantômes lorsqu'on lance une partie
     #et qui s'annule quand on quitte le jeu
@@ -53,17 +61,24 @@ def update_fantomes():
         #Meme chose pour posX2 et posY2
         b = random.randint(1,4)
         if b == 1:
-            posX2 += 1
+            dx2 = 1
+            dy2 = 0
 
         elif b ==2:
-            posX2 -= 1
+            dx2 = -1
+            dy2 = 0
             
         elif b== 3:
-            posY2 += 1
+            dx2 = 0
+            dy2 = 1
             
         else:
-            posY2 -= 1
-
+            dx2 = 0
+            dy2 = -1
+            
+        if cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 0: # case vide 
+            posY2 += dy2
+            posX2 += dx2
                 
                 
         #On actualise les coordonnées des fantômes
@@ -73,7 +88,7 @@ def update_fantomes():
     canvasJ.after(200, update_fantomes)
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
-
+    global pointsScore
     
     
     touche = event.keysym
@@ -81,20 +96,20 @@ def depl(event, pacman, carteJeu):
     global posX, posY, Points, dx, dy
     #les dx/dy sont des variables permettant de faire un test pour savoir si les coordonnées du pacman et celles des murs de la carte
     #se confondent, si ce n'est pas le cas, alors on fait varier les variables de positions du pacman suivant la touche pressée.
-    if touche == "Up": #haut
+    if touche == "Up": #Haut
         dx = 0
         dy = -1
         canvasJ.itemconfig(pacman, start = 135, extent = 270)
         
-    elif touche == "Down": #bas
+    elif touche == "Down": #Bas
         dx = 0
         dy = 1
         canvasJ.itemconfig(pacman, start = -45, extent = 270)
-    elif touche == "Left": #gauche
+    elif touche == "Left": #Gauche
         dx = -1
         dy = 0
         canvasJ.itemconfig(pacman, start = 45, extent = 270)
-    elif touche == "Right": # droite
+    elif touche == "Right": #Droite
         dx = 1
         dy = 0
         canvasJ.itemconfig(pacman, start = 225, extent = 270)
@@ -113,6 +128,8 @@ def depl(event, pacman, carteJeu):
             posX = 55
     elif carteJeu[posY+2*dy][posX+2*dx] == 9:  #La case est occupée par une pastille
         carteJeu[posY+2*dy][posX+2*dx] = 0  #On mange la pastille, la case devient vide
+        pointsScore += 10
+        lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore))
         
         canvasJ.addtag_closest('miam', (posX+2*dx)*10+5,(posY+2*dy)*10+5, halo=5)  #On tag l'objet 'pastille' sur le canvas -> il s'appelle 'miam'
         canvasJ.delete('miam')  #On supprime la pastille du canvas
@@ -166,10 +183,11 @@ def show_menu():
     posY1 = 32
     posX2 = 34
     posY2 = 32
-    canvasJ.delete("all") #On supprime tous les objets : fantômes et pacman
+    #canvasJ.delete("all") #On supprime tous les objets : fantômes et pacman
     
-    blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fill = "red")
-    pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
+    canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
+    canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
+    canvasJ.delete("pacman")
     for child in app.winfo_children():
         child.grid_forget()
     menu_frame.grid()
@@ -235,7 +253,9 @@ blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fil
 
 pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
 
-
+#Label affichant le score
+lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore))
+lbl_Score.pack()                         
 
 #canvasJ.after(200, update_fantomes)
 
