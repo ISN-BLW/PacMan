@@ -47,17 +47,24 @@ def update_fantomes():
         #On génére un nombre entre 1 et 4 pour faire varier posX1 et posY1
         a = random.randint(1,4)
         if a == 1:
-            posX1 += 1
-
+            dx1 = 1
+            dy1 = 0
         elif a == 2:
-            posX1 -= 1
+            dx1 = -1
+            dy1 = 0
 
         elif a== 3:
-            posY1 += 1
+            dx1 = 0
+            dy1 = 1
             
         else:
-            posY1 -= 1
+            dx1 = 0
+            dy1 = -1
 
+
+        if cartePM.carte2[posY1+2*dy1][posX1+2*dx1] == 0 and cartePM.carte2[posY1+2*dy1+abs(dx1)][posX1+2*dx2+abs(dy1)] == 0 and cartePM.carte2[posY1+2*dy1-abs(dx1)][posX1+2*dx1-abs(dy1)] == 0: # case vide 
+            posY1 += dy1
+            posX1 += dx1
         #Meme chose pour posX2 et posY2
         b = random.randint(1,4)
         if b == 1:
