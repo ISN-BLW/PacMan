@@ -1,6 +1,7 @@
 from tkinter import *
-import cartePM  #on importe un autre fichier python contenant les cartes.
-import random
+from tkinter.messagebox import *
+import cartePM  #On importe un autre fichier python contenant la carte.
+import random   #On importe 
 
 #Variable pour la mise en route du déplacement des fonctions
 marche_fantome = False
@@ -144,7 +145,11 @@ def depl(event, pacman, carteJeu):
         posX += dx
 
     canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = (dy*90+abs(dy)*225)+(dx*90-abs(dx)*45), extent = 270) # on re affiche le pacman
-
+    
+    if pointsScore == 20:#246 points au total
+       
+        showinfo("ALERTE", "Vous avez gagné !")
+        show_menu()
 
  #Fonction pour créer la carte   
 def makeMap(carteJeu):
@@ -172,12 +177,12 @@ def start_game():
     # On appelle grid_forget sur les 3, puis on
     # appelle grid sur celle qu'on veut montrer
     menu_frame.grid_forget()
-    gameMenu_frame.grid()
+    gameMenu_frame.grid(ipadx = 30, ipady = 150)
  
 def show_rules():
     #On oublie la frame de menu pour appeler (grid) la frame du menu
     menu_frame.grid_forget()
-    rules_frame.grid()
+    rules_frame.grid(ipady = 150)
  
 def show_menu():
     #On réinitialise les positions du pacman à chaque fois que cette fonction est appelée
@@ -194,10 +199,11 @@ def show_menu():
     
     canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
     canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
-    canvasJ.delete("pacman")
+    canvasJ.coords(pacman, posX*10-9, posY*10-9, posX*10+19, posY*9+19)
+    
     for child in app.winfo_children():
         child.grid_forget()
-    menu_frame.grid()
+    menu_frame.grid(ipady = 150)
 
 
    
@@ -210,37 +216,43 @@ app.title("PAC MAN")
 
 
 """M E N U"""
-menu_frame = Frame(app)
-startB = Button(menu_frame, text='START', command=start_game)
-regleB = Button(menu_frame, text='Règles', command=show_rules)
-quitterB = Button(menu_frame, text = "Quitter", command = app.destroy)
-startB.grid(row = 2, column = 2, ipady = 10)
-regleB.grid(row = 4, column = 4, ipady = 10)
-quitterB.grid(row = 5, column = 5, ipady = 10)
+menu_frame = Frame(app, bg = "#7DBFCF")
+boxM = Frame(menu_frame, bg = "#338092")
+boxM.pack(padx = 350, pady = 150)
+startB = Button(boxM, text='START', command=start_game, relief = GROOVE)
+regleB = Button(boxM, text='Règles', command=show_rules, relief = GROOVE)
+quitterB = Button(boxM, text = "Quitter", command = app.destroy, relief = GROOVE)
+startB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
+regleB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
+quitterB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
 
 
 
  
-"""C H O I X  D E S  C A R T E S"""
+"""C H O I X  D E  L A  C A R T E"""
 #Frame pour le menu
-gameMenu_frame = Frame(app, bg = "#172457")
+gameMenu_frame = Frame(app, bg = "#7DBFCF")
+boxGM = Frame(gameMenu_frame, bg = "#338092")
+boxGM.pack(padx = 300, pady = 150)
+
+#Bouton pour choisir la carte 
+bouCarte2 = Button(boxGM, text = "Carte",bd = 4, command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
+bouCarte2.pack(pady = 50, ipady = 10, padx = 50)
 
 #Bouton pour retourner au menu
-return_btn = Button(gameMenu_frame, text='Retour au menu', command=show_menu)
-return_btn.grid(row = 1, column = 3, ipady = 10)
+return_btn = Button(boxGM, text='Retour au menu', command=show_menu, relief = GROOVE)
+return_btn.pack(ipady = 10, pady =10)
 
 #Bouton pour choisir la carte 1
 #bouCarte1 = Button(gameMenu_frame, text = "Carte 1", bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte1: makeMap(cartePM.carte1))
 #bouCarte1.grid(pady = 10,ipady = 5, padx = 5,  row = 1, column = 1)
 
-#Bouton pour choisir la carte 2
-bouCarte2 = Button(gameMenu_frame, text = "Carte 2",bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
-bouCarte2.grid(pady = 10, ipady = 50, padx = 50, row = 1, column = 2)
+
 
 
 
 """L E J E U"""
-game_frame = Frame(app)
+game_frame = Frame(app, bg = "#7DBFCF")
 
 canvasJ = Canvas(game_frame, bg = "dark blue", width = 600, height = 650)
 canvasJ.pack(side = LEFT)
@@ -249,10 +261,10 @@ canvasJ.bind("<Key>", lambda event: depl(event, pacman, cartePM.carte2))
 
 #Bouton pour retourner au menu
 return_btn = Button(game_frame, text='Retour au menu', command=show_menu, relief = "ridge")
-return_btn.pack(ipady = 10, padx = 5)
+return_btn.pack(ipady = 10, ipadx = 10, padx = 5, pady = 20)
 
 #Création du pac man
-pacman = canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "#BEBE15", start = 225, extent = 270)
+pacman = canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = 225, extent = 270)
     
 
 #Création des fantomes
@@ -261,20 +273,29 @@ blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fil
 pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
 
 #Label affichant le score
-lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore))
-lbl_Score.pack()                         
+lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#338092", fg = "white")
+lbl_Score.pack(pady = 50, padx = 10)                         
 
-#canvasJ.after(200, update_fantomes)
+if pointsScore == 20:
+    print("Wonja va récuperer ces bananes")
 
 
 """R E G L E S"""
-rules_frame = Frame(app)
-rules = Label(rules_frame, text="Blablabla regles blablabla")
+rules_frame = Frame(app, bg = "#7DBFCF")
+boxR = Frame(rules_frame)
+boxR.pack(padx = 175, pady = 150)
+rules = Label(boxR, text="Le jeu commence en cliquant sur l'ecran de jeu.\n"
+              "Le but du jeu est de collecter tous les points dans le niveau.\n"
+              "Pendant ce temps on est suivi par plusieurs fantômes qui ne doivent pas nous toucher.\n\n"
+              "Pacman est déplacé grâce aux touches flèche.\n"
+              "Partout où il passe, il mange les points jaunes.\n"
+              "Lorsque tous les points ont été mangés, le niveau est terminé et on passe au suivant.\n"
+              "Une rencontre avec un des fantômes réinitialise la position du pacman. \n", bg = "#338092", fg = "white")
 rules.grid()
-return_btn = Button(rules_frame, text='Retour au menu', command=show_menu)
-return_btn.grid()
+return_btn = Button(rules_frame, text='Retour au menu', command=show_menu, relief = GROOVE)
+return_btn.pack(ipady = 5, ipadx = 5, pady = 10)
 
  
 # Au début on commence par montrer le menu
-menu_frame.grid()
+menu_frame.grid(ipady = 150)
 app.mainloop()
