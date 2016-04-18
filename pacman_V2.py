@@ -237,7 +237,7 @@ boxGM.pack(padx = 300, pady = 150)
 
 #Bouton pour choisir la carte 
 bouCarte2 = Button(boxGM, text = "Carte",bd = 4, command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
-bouCarte2.pack(pady = 50, ipady = 10, padx = 50)
+bouCarte2.pack(ipady = 20, ipadx = 20, pady = 50, padx = 50)
 
 #Bouton pour retourner au menu
 return_btn = Button(boxGM, text='Retour au menu', command=show_menu, relief = GROOVE)
