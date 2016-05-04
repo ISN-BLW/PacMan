@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter.messagebox import *
+from tkinter.messagebox import * #On importe cette bibliothèque pour afficher un message d'avertissement
 import cartePM  #On importe un autre fichier python contenant la carte.
 import random   #On importe 
 
@@ -18,6 +18,7 @@ posY2 = 32
 posX = 29
 posY = 48
 
+#Différentes variables permettant d'effectuer une verification des positions sur la carte du pacman et des fantômes.
 dx = 0
 dy = 0
 dx1 = 0
@@ -32,6 +33,8 @@ pointsScore = 0
 
 
 """L E S  F O N C T I O N S"""
+
+#Cette fonction permet d'initialiser la fonction de déplacement des fantômes.
 def fantome_True():
     global marche_fantome
     marche_fantome = True
@@ -87,13 +90,37 @@ def update_fantomes():
         if cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 0: # case vide 
             posY2 += dy2
             posX2 += dx2
-                
+
+        elif cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 1 and dx2 == 1:
+            posY2 += 1
+      
+
+        elif cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 1 and dx2 == -1:
+            posY2 -= 1
+     
+            
+        elif cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 1 and dy2 == -1:
+            posX2 += 1
+         
+            
+        elif cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 0 and cartePM.carte2[posY2+2*dy2+abs(dx2)][posX2+2*dx2+abs(dy2)] == 0 and cartePM.carte2[posY2+2*dy2-abs(dx2)][posX2+2*dx2-abs(dy2)] == 1 and dy2 == 1:
+            posX2 -= 1
+          
+            
+    
                 
         #On actualise les coordonnées des fantômes
         canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
         canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
+
+    #On rajoute cette condition pour faire en sorte que si on retourne au menu, cette fonction se réinitialise. De ce fait, à chaque fois qu'on relance le jeu, cette fonction s'execute comme si c'etait la premiere fois qu'on l'a lancé.    
+    elif marche_fantome == False:
+        return
+
+    
     #Timer de Tkinter : toutes les 200ms on appelle la fonction "update_fantomes" qui fait appel à elle meme en plus des coordonées
     canvasJ.after(200, update_fantomes)
+    
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
     global pointsScore
@@ -116,15 +143,16 @@ def depl(event, pacman, carteJeu):
     elif touche == "Left": #Gauche
         dx = -1
         dy = 0
-        canvasJ.itemconfig(pacman, start = 45, extent = 270)
+        canvasJ.itemconfig(pacman, start = 225, extent = 270)
     elif touche == "Right": #Droite
         dx = 1
         dy = 0
-        canvasJ.itemconfig(pacman, start = 225, extent = 270)
+        canvasJ.itemconfig(pacman, start = 45, extent = 270)
 
-
-    canvasJ.addtag_closest('pacman', posX*10,posY*10, halo=5) # On tag l'objet 'pacman' sur le canvas -> il s'appelle 'pacman'
-    canvasJ.delete('pacman')
+    canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
+    
+    #canvasJ.addtag_closest('pacman', posX*10,posY*10, halo=5) # On tag l'objet 'pacman' sur le canvas -> il s'appelle 'pacman'
+    #canvasJ.delete('pacman')
   
     if carteJeu[posY+2*dy][posX+2*dx] == 0 and carteJeu[posY+2*dy+abs(dx)][posX+2*dx+abs(dy)] == 0 and carteJeu[posY+2*dy-abs(dx)][posX+2*dx-abs(dy)] == 0: # case vide 
             posY += dy
@@ -144,12 +172,18 @@ def depl(event, pacman, carteJeu):
         posY += dy
         posX += dx
 
-    canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = (dy*90+abs(dy)*225)+(dx*90-abs(dx)*45), extent = 270) # on re affiche le pacman
-    
-    if pointsScore == 20:#246 points au total
-       
+    #canvasJ.create_arc(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "yellow", start = (dy*90+abs(dy)*225)+(dx*90-abs(dx)*45), extent = 270) # on re affiche le pacman
+
+    if posX == posX2 and posY == posY2:
+        posY = 48
+        posX = 29
+        pointsScore -= 200
+        canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
+    if pointsScore == 2460: #246 points au total
+       #on affiche un message pour alerter le joueur de sa victoire et on le fait revenir au menu du jeu
         showinfo("ALERTE", "Vous avez gagné !")
         show_menu()
+
 
  #Fonction pour créer la carte   
 def makeMap(carteJeu):
@@ -185,9 +219,11 @@ def show_rules():
     rules_frame.grid(ipady = 150)
  
 def show_menu():
+    
     #On réinitialise les positions du pacman à chaque fois que cette fonction est appelée
     #Ainsi à chaque fois que l'utilisateur est en jeu et qu'il retourne à la fenêtre principale alors les positions se réinitialisent toutes et un nouvelle partie peut débuter
-    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome
+    #On réinitialise également le score
+    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome, pointsScore
     marche_fantome = False
     posX = 29
     posY = 48
@@ -195,29 +231,37 @@ def show_menu():
     posY1 = 32
     posX2 = 34
     posY2 = 32
-    #canvasJ.delete("all") #On supprime tous les objets : fantômes et pacman
+    pointsScore = 0
+
+    lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore))
+    
     
     canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
     canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
-    canvasJ.coords(pacman, posX*10-9, posY*10-9, posX*10+19, posY*9+19)
-    
+    canvasJ.coords(pacman, posX*10-9, posY*10-9, posX*10+19, posY*10+19)
+    #On oublie la frame active pour retourner au menu
     for child in app.winfo_children():
         child.grid_forget()
     menu_frame.grid(ipady = 150)
 
 
-   
+#Variable des dimensions de notre fenêtre
+L = 800
+H = 650 
 
 app = Tk()
-app.geometry("800x650")
+#On empêche l'utilisateur de redimensionner la fenêtre par soucis
+app.resizable(width=FALSE, height=FALSE)
+#On ajuste le positionnement de la fenêtre pour qu'elle soit au mileu de l'ecran
+app.geometry("%dx%d%+d%+d" % (L,H,(app.winfo_screenwidth()-L)//2,(app.winfo_screenheight()-H)//2))
 app.title("PAC MAN")
 
 
 
 
 """M E N U"""
-menu_frame = Frame(app, bg = "#7DBFCF")
-boxM = Frame(menu_frame, bg = "#338092")
+menu_frame = Frame(app, bg = "#2EA4BA")
+boxM = Frame(menu_frame, bg = "#017F97")
 boxM.pack(padx = 350, pady = 150)
 startB = Button(boxM, text='START', command=start_game, relief = GROOVE)
 regleB = Button(boxM, text='Règles', command=show_rules, relief = GROOVE)
@@ -231,8 +275,8 @@ quitterB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
  
 """C H O I X  D E  L A  C A R T E"""
 #Frame pour le menu
-gameMenu_frame = Frame(app, bg = "#7DBFCF")
-boxGM = Frame(gameMenu_frame, bg = "#338092")
+gameMenu_frame = Frame(app, bg = "#2EA4BA ")
+boxGM = Frame(gameMenu_frame, bg = "#017F97 ")
 boxGM.pack(padx = 300, pady = 150)
 
 #Bouton pour choisir la carte 
@@ -241,7 +285,7 @@ bouCarte2.pack(ipady = 20, ipadx = 20, pady = 50, padx = 50)
 
 #Bouton pour retourner au menu
 return_btn = Button(boxGM, text='Retour au menu', command=show_menu, relief = GROOVE)
-return_btn.pack(ipady = 10, pady =10)
+return_btn.pack(ipady = 10, pady =20)
 
 #Bouton pour choisir la carte 1
 #bouCarte1 = Button(gameMenu_frame, text = "Carte 1", bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte1: makeMap(cartePM.carte1))
@@ -252,7 +296,7 @@ return_btn.pack(ipady = 10, pady =10)
 
 
 """L E J E U"""
-game_frame = Frame(app, bg = "#7DBFCF")
+game_frame = Frame(app, bg = "#2EA4BA")
 
 canvasJ = Canvas(game_frame, bg = "dark blue", width = 600, height = 650)
 canvasJ.pack(side = LEFT)
@@ -273,7 +317,7 @@ blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fil
 pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
 
 #Label affichant le score
-lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#338092", fg = "white")
+lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#017F97", fg = "white")
 lbl_Score.pack(pady = 50, padx = 10)                         
 
 if pointsScore == 20:
@@ -281,7 +325,7 @@ if pointsScore == 20:
 
 
 """R E G L E S"""
-rules_frame = Frame(app, bg = "#7DBFCF")
+rules_frame = Frame(app, bg = "#2EA4BA")
 boxR = Frame(rules_frame)
 boxR.pack(padx = 175, pady = 150)
 rules = Label(boxR, text="Le jeu commence en cliquant sur l'ecran de jeu.\n"
@@ -289,8 +333,8 @@ rules = Label(boxR, text="Le jeu commence en cliquant sur l'ecran de jeu.\n"
               "Pendant ce temps on est suivi par plusieurs fantômes qui ne doivent pas nous toucher.\n\n"
               "Pacman est déplacé grâce aux touches flèche.\n"
               "Partout où il passe, il mange les points jaunes.\n"
-              "Lorsque tous les points ont été mangés, le niveau est terminé et on passe au suivant.\n"
-              "Une rencontre avec un des fantômes réinitialise la position du pacman. \n", bg = "#338092", fg = "white")
+              "Lorsque tous les points ont été mangés, le niveau est terminé.\n"
+              "Une rencontre avec un des fantômes réinitialise la position du pacman. \n", bg = "#017F97", fg = "white")
 rules.grid()
 return_btn = Button(rules_frame, text='Retour au menu', command=show_menu, relief = GROOVE)
 return_btn.pack(ipady = 5, ipadx = 5, pady = 10)
