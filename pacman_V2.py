@@ -38,7 +38,8 @@ dy2 = 0
 
 
 #Variable pour le score
-pointsScore = 0
+pointsScore_aff = 0
+pointsScore_reel = 0
 
 
 """L E S  F O N C T I O N S"""
@@ -137,7 +138,7 @@ def update_fantomes():
     
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
-    global pointsScore
+    global pointsScore_aff
     
     
     touche = event.keysym
@@ -179,8 +180,9 @@ def depl(event, pacman, carteJeu):
             posX = 55
     elif carteJeu[posY+2*dy][posX+2*dx] == 9:  #La case est occupée par une pastille
         carteJeu[posY+2*dy][posX+2*dx] = 0  #On mange la pastille, la case devient vide
-        pointsScore += 10
-        lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore))
+        pointsScore_aff += 10
+        pointsScore_reel += 10
+        lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
         
         canvasJ.addtag_closest('miam', (posX+2*dx)*10+5,(posY+2*dy)*10+5, halo=5)  #On tag l'objet 'pastille' sur le canvas -> il s'appelle 'miam'
         canvasJ.delete('miam')  #On supprime la pastille du canvas
@@ -194,10 +196,10 @@ def depl(event, pacman, carteJeu):
     if posX == posX2 and posY == posY2:
         posY = 48
         posX = 29
-        pointsScore -= 200
-        lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore))
+        pointsScore_aff -= 200
+        lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
         canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
-    if pointsScore == 2060: #246 points au total
+    if pointsScore_reel == 2460: #246 points au total
        #on affiche un message pour alerter le joueur de sa victoire et on le fait revenir au menu du jeu
         showinfo("ALERTE", "Vous avez gagné !")
         show_menu()
@@ -243,7 +245,7 @@ def show_menu():
     #On réinitialise les positions du pacman à chaque fois que cette fonction est appelée
     #Ainsi à chaque fois que l'utilisateur est en jeu et qu'il retourne à la fenêtre principale alors les positions se réinitialisent toutes et un nouvelle partie peut débuter
     #On réinitialise également le score
-    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome, pointsScore
+    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome, pointsScore_aff, pointsScore_reel
     marche_fantome = False
     posX = 29
     posY = 48
@@ -251,9 +253,10 @@ def show_menu():
     posY1 = 12
     posX2 = 44
     posY2 = 42
-    pointsScore = 0
+    pointsScore_aff = 0
+    pointsScore_reel = 0
 
-    lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore))
+    lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
     
     
     canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
@@ -337,14 +340,12 @@ blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fil
 pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
 
 #Label affichant le score
-lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#017F97", fg = "white")
+lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore_aff), font = "Courier 20 bold", bg = "#017F97", fg = "white")
 lbl_Score.pack(pady = 50, padx = 10)
 
 lbl_pos = Label(game_frame)
 canvasJ.bind("<Button-1>", bruh)
 
-if pointsScore == 20:
-    print("Wonja va récuperer ces bananes")
 
 
 """R E G L E S"""
