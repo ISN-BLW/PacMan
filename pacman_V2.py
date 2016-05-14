@@ -7,13 +7,20 @@ import random   #On importe
 marche_fantome = False
 
 #Position de Blinky (fantôme rouge)
-posX1 = 24
-posY1 = 32
+posX1 = 15
+posY1 = 42
 
 #Position de Pinky (fantôme rose)
-posX2 = 45
-posY2 = 12
+posX2 = 44
+posY2 = 11
 
+#Position de Verty (fantome vert)
+posX3 = 44
+posY3 = 43
+
+#Position de Bleuy (fantome bleu)
+posX4 = 14
+posY4 = 13
 #Position de PacMan
 posX = 29
 posY = 48
@@ -117,10 +124,15 @@ def update_fantomes():
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
     global pointsScore, pointsScore_aff
-    
+    print(posX, posY)
     
     touche = event.keysym
-    
+    #A chaque déplacement du pacman, on créé un rectangle bleu pour cacher les pacgommes
+    canvasJ.create_rectangle(posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19, fill = "dark blue", outline = "")
+    #Puis on remet au premier plan le pacman et les fantomes
+    canvasJ.tag_raise(pacman)
+    canvasJ.tag_raise(pinky)
+    canvasJ.tag_raise(blinky)
     global posX, posY, Points, dx, dy
     #les dx/dy sont des variables permettant de faire un test pour savoir si les coordonnées du pacman et celles des murs de la carte
     #se confondent, si ce n'est pas le cas, alors on fait varier les variables de positions du pacman suivant la touche pressée.
@@ -158,9 +170,10 @@ def depl(event, pacman, carteJeu):
         pointsScore_aff += 10
         pointsScore += 10
         lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
-        
-        canvasJ.addtag_closest('miam', (posX+2*dx)*10+5,(posY+2*dy)*10+5, halo=5)  #On tag l'objet 'pastille' sur le canvas -> il s'appelle 'miam'
-        canvasJ.delete('miam')  #On supprime la pastille du canvas
+
+        #canvasJ.addtag_overlapping("miam", (posX+dx)*10+2, (posY+dy)*10+2,(posX+dx)*10-2, (posY+dy)*10-2)
+        canvasJ.addtag_closest('miam', (posX+2*dx)*10+3,(posY+2*dy)*10+3, halo=2)  #On tag l'objet la  sur le canvas -> il s'appelle 'miam'
+        #canvasJ.delete("miam")  #On supprime la pastille du canvas
         posY += dy
         posX += dx
 
@@ -221,10 +234,10 @@ def show_menu():
     marche_fantome = False
     posX = 29
     posY = 48
-    posX1 = 24
-    posY1 = 32
-    posX2 = 34
-    posY2 = 32
+    posX1 = 14
+    posY1 = 43
+    posX2 = 43
+    posY2 = 14
     pointsScore = 0
     pointsScore_aff = 0
 
@@ -270,8 +283,8 @@ quitterB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
  
 """C H O I X  D E  L A  C A R T E"""
 #Frame pour le menu
-gameMenu_frame = Frame(app, bg = "#2EA4BA ")
-boxGM = Frame(gameMenu_frame, bg = "#017F97 ")
+gameMenu_frame = Frame(app, bg = "#2EA4BA")
+boxGM = Frame(gameMenu_frame, bg = "#017F97")
 boxGM.pack(padx = 300, pady = 150)
 
 #Bouton pour choisir la carte 
