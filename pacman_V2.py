@@ -16,11 +16,11 @@ posY2 = 11
 
 #Position de Verty (fantome vert)
 posX3 = 44
-posY3 = 43
+posY3 = 42
 
 #Position de Bleuy (fantome bleu)
 posX4 = 14
-posY4 = 13
+posY4 = 12
 #Position de PacMan
 posX = 29
 posY = 48
@@ -32,6 +32,10 @@ dx1 = 0
 dy1 = 0
 dx2 = 0
 dy2 = 0
+dx3 = 0
+dy3 = 0
+dx4 = 0
+dy4 = 0
 
 
 
@@ -51,7 +55,7 @@ def fantome_True():
 
     
 def update_fantomes():
-    global posX1, posY1, posX2, posY2, dy2, dx2
+    global posX1, posY1, posX2, posY2, posX3, posY3, posX4, posY4, dy2, dx2, dx3, dy3, dx4, dy4
 
     #Condition qui permet de faire fonctionner notre fonction de déplacement automatique des fantômes lorsqu'on lance une partie
     #et qui s'annule quand on quitte le jeu
@@ -79,8 +83,8 @@ def update_fantomes():
             posX1 += dx1
             
         elif cartePM.carte2[posY1+2*dy1][posX1+2*dx1] == 9:     
-            posY2 += dy1
-            posX2 += dx1
+            posY1 += dy1
+            posX1 += dx1
 
         #Meme chose pour posX2 et posY2
         b = random.randint(1,4)
@@ -108,10 +112,64 @@ def update_fantomes():
         elif cartePM.carte2[posY2+2*dy2][posX2+2*dx2] == 9:     
             posY2 += dy2
             posX2 += dx2
-                
+
+        #Pour posX3/posY3
+        c = random.randint(1,4)
+        if c == 1:
+            dx3 = 1
+            dy3 = 0
+            
+
+        elif c == 2:
+            dx3 = -1
+            dy3 = 0
+            
+        elif c == 3:
+            dx3 = 0
+            dy3 = 1
+            
+        else:
+            dx3 = 0
+            dy3 = -1
+            
+        if cartePM.carte2[posY3+2*dy3][posX3+2*dx3] == 0 and cartePM.carte2[posY3+2*dy3+abs(dx3)][posX3+2*dx3+abs(dy3)] == 0 and cartePM.carte2[posY3+2*dy3-abs(dx3)][posX3+2*dx3-abs(dy3)] == 0: # case vide 
+            posY3 += dy3
+            posX3 += dx3
+        
+        elif cartePM.carte2[posY3+2*dy3][posX3+2*dx3] == 9:     
+            posY3 += dy3
+            posX3 += dx3
+        #Pour posX4/posY4
+        d = random.randint(1,4)
+        if d == 1:
+            dx4 = 1
+            dy4 = 0
+            
+
+        elif d == 2:
+            dx4 = -1
+            dy4 = 0
+            
+        elif d == 3:
+            dx4 = 0
+            dy4 = 1
+            
+        else:
+            dx4 = 0
+            dy4 = -1
+            
+        if cartePM.carte2[posY4+2*dy4][posX4+2*dx4] == 0 and cartePM.carte2[posY4+2*dy4+abs(dx4)][posX4+2*dx4+abs(dy4)] == 0 and cartePM.carte2[posY4+2*dy4-abs(dx4)][posX4+2*dx4-abs(dy4)] == 0: # case vide 
+            posY4 += dy4
+            posX4 += dx4
+        
+        elif cartePM.carte2[posY4+2*dy4][posX4+2*dx4] == 9:     
+            posY4 += dy4
+            posX4 += dx4
         #On actualise les coordonnées des fantômes
         canvasJ.coords(blinky, posX1*10-9, posY1*10-9, posX1*10+19, posY1*10+19)
         canvasJ.coords(pinky, posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19)
+        canvasJ.coords(verty, posX3*10-9, posY3*10-9, posX3*10+19, posY3*10+19)
+        canvasJ.coords(bleuy, posX4*10-9, posY4*10-9, posX4*10+19, posY4*10+19)
 
     #On rajoute cette condition pour faire en sorte que si on retourne au menu, cette fonction se réinitialise. De ce fait, à chaque fois qu'on relance le jeu, cette fonction s'execute comme si c'etait la premiere fois qu'on l'a lancé.    
     elif marche_fantome == False:
@@ -123,7 +181,7 @@ def update_fantomes():
     
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
-    global pointsScore, pointsScore_aff
+    global pointsScore, pointsScore_aff, posX, posY, Points, dx, dy
     print(posX, posY)
     
     touche = event.keysym
@@ -133,25 +191,31 @@ def depl(event, pacman, carteJeu):
     canvasJ.tag_raise(pacman)
     canvasJ.tag_raise(pinky)
     canvasJ.tag_raise(blinky)
-    global posX, posY, Points, dx, dy
+    canvasJ.tag_raise(bleuy)
+    canvasJ.tag_raise(verty)
+
     #les dx/dy sont des variables permettant de faire un test pour savoir si les coordonnées du pacman et celles des murs de la carte
     #se confondent, si ce n'est pas le cas, alors on fait varier les variables de positions du pacman suivant la touche pressée.
     if touche == "Up": #Haut
         dx = 0
         dy = -1
+        #On repositionne le pacman en fonction du mouvement 
         canvasJ.itemconfig(pacman, start = 135, extent = 270)
         
     elif touche == "Down": #Bas
         dx = 0
         dy = 1
+        #On repositionne le pacman en fonction du mouvement 
         canvasJ.itemconfig(pacman, start = -45, extent = 270)
     elif touche == "Left": #Gauche
         dx = -1
         dy = 0
+        #On repositionne le pacman en fonction du mouvement 
         canvasJ.itemconfig(pacman, start = 225, extent = 270)
     elif touche == "Right": #Droite
         dx = 1
         dy = 0
+        #On repositionne le pacman en fonction du mouvement 
         canvasJ.itemconfig(pacman, start = 45, extent = 270)
 
     
@@ -166,21 +230,20 @@ def depl(event, pacman, carteJeu):
         elif dx == -1:
             posX = 55
     elif carteJeu[posY+2*dy][posX+2*dx] == 9:  #La case est occupée par une pastille
-        carteJeu[posY+2*dy][posX+2*dx] = 0  #On mange la pastille, la case devient vide
+        #On determine cette case comme étant une case vide
+        carteJeu[posY+2*dy][posX+2*dx] = 0  
         pointsScore_aff += 10
         pointsScore += 10
         lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
 
-        #canvasJ.addtag_overlapping("miam", (posX+dx)*10+2, (posY+dy)*10+2,(posX+dx)*10-2, (posY+dy)*10-2)
-        canvasJ.addtag_closest('miam', (posX+2*dx)*10+3,(posY+2*dy)*10+3, halo=2)  #On tag l'objet la  sur le canvas -> il s'appelle 'miam'
-        #canvasJ.delete("miam")  #On supprime la pastille du canvas
+       
         posY += dy
         posX += dx
 
     
     canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
 
-    if posX == posX2 and posY == posY2 or posX == posX1 and posY == posY1:
+    if posX == posX2 and posY == posY2 or posX == posX1 and posY == posY1 or posX == posX3 and posY == posY3 or posX == posX4 and posY == posY4:
         posY = 48
         posX = 29
         pointsScore_aff -= 200
@@ -212,6 +275,8 @@ def makeMap(carteJeu):
     canvasJ.tag_raise(pacman)
     canvasJ.tag_raise(blinky)
     canvasJ.tag_raise(pinky)
+    canvasJ.tag_raise(verty)
+    canvasJ.tag_raise(bleuy)
     
 def start_game():
     # app (Tk) contient trois enfants : nos 3 frames.
@@ -230,7 +295,7 @@ def show_menu():
     #On réinitialise les positions du pacman à chaque fois que cette fonction est appelée
     #Ainsi à chaque fois que l'utilisateur est en jeu et qu'il retourne à la fenêtre principale alors les positions se réinitialisent toutes et un nouvelle partie peut débuter
     #On réinitialise également le score
-    global posX, posY, posX1, posY1, posX2, posY2, marche_fantome, pointsScore, pointsScore_aff
+    global posX, posY, posX1, posY1, posX2, posY2, posX3, posY3, posX4, posY4, marche_fantome, pointsScore, pointsScore_aff
     marche_fantome = False
     posX = 29
     posY = 48
@@ -238,6 +303,10 @@ def show_menu():
     posY1 = 43
     posX2 = 43
     posY2 = 14
+    posX3 = 44
+    posY3 = 42
+    posX4 = 14
+    posY4 = 12
     pointsScore = 0
     pointsScore_aff = 0
 
@@ -324,6 +393,9 @@ blinky = canvasJ.create_oval(posX1*10-9, posY1*10-9,posX1*10+19,posY1*10+19, fil
 
 pinky = canvasJ.create_oval(posX2*10-9, posY2*10-9, posX2*10+19, posY2*10+19, fill = "pink")
 
+verty = canvasJ.create_oval(posX3*10-9, posY3*10-9, posX3*10+19, posY3*10+19, fill = "green")
+
+bleuy = canvasJ.create_oval(posX4*10-9, posY4*10-9, posX4*10+19, posY4*10+19, fill = "cyan")
 #Label affichant le score
 lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#017F97", fg = "white")
 lbl_Score.pack(pady = 50, padx = 10)                         
