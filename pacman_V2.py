@@ -39,19 +39,27 @@ dy4 = 0
 
 
 
-#Variable pour le score
+#Variable pour le score et le temps
 pointsScore = 0
 pointsScore_aff = 0
+timer = 120
 
 
 """L E S  F O N C T I O N S"""
 
+#Fonction du timer
+def timerJeu():
+    global timer
+    timer -= 1
+    lbl_timer.config(text = "Temps Restant :\n" +str(timer))
+    canvasJ.after(1000,timerJeu)
+    
 #Cette fonction permet d'initialiser la fonction de déplacement des fantômes.
 def fantome_True():
     global marche_fantome
     marche_fantome = True
-    canvasJ.after(200, update_fantomes)
-
+    canvasJ.after(100, update_fantomes)
+    canvasJ.after(1000,timerJeu)
 
     
 def update_fantomes():
@@ -171,18 +179,19 @@ def update_fantomes():
         canvasJ.coords(verty, posX3*10-9, posY3*10-9, posX3*10+19, posY3*10+19)
         canvasJ.coords(bleuy, posX4*10-9, posY4*10-9, posX4*10+19, posY4*10+19)
 
-    #On rajoute cette condition pour faire en sorte que si on retourne au menu, cette fonction se réinitialise. De ce fait, à chaque fois qu'on relance le jeu, cette fonction s'execute comme si c'etait la premiere fois qu'on l'a lancé.    
+    #On rajoute cette condition pour faire en sorte que si on retourne au menu, cette fonction se réinitialise.
+    #De ce fait, à chaque fois qu'on relance le jeu, cette fonction s'execute comme si c'etait la premiere fois qu'on l'a lancé.    
     elif marche_fantome == False:
         return
 
     
     #Timer de Tkinter : toutes les 200ms on appelle la fonction "update_fantomes" qui fait appel à elle meme en plus des coordonées
-    canvasJ.after(200, update_fantomes)
+    canvasJ.after(100, update_fantomes)
     
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
     global pointsScore, pointsScore_aff, posX, posY, Points, dx, dy
-    print(posX, posY)
+
     
     touche = event.keysym
     #A chaque déplacement du pacman, on créé un rectangle bleu pour cacher les pacgommes
@@ -242,16 +251,17 @@ def depl(event, pacman, carteJeu):
 
     
     canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
-
+    #Si les positions du pacman sont les memes que celles d'un fantome alors on enleve 200 points et on remet le pacman à ses coordonnées de base
     if posX == posX2 and posY == posY2 or posX == posX1 and posY == posY1 or posX == posX3 and posY == posY3 or posX == posX4 and posY == posY4:
         posY = 48
         posX = 29
         pointsScore_aff -= 200
         lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
         canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
-    if pointsScore == 2420: #242 pastilles au total
+    if pointsScore == 60: #242 pastilles au total
+
        #on affiche un message pour alerter le joueur de sa victoire et on le fait revenir au menu du jeu
-        showinfo("ALERTE", "Vous avez gagné !")
+        showinfo("ALERTE", "Vous avez gagné !\n\n     Bien joué !")
         show_menu()
 
 
@@ -400,7 +410,11 @@ bleuy = canvasJ.create_oval(posX4*10-9, posY4*10-9, posX4*10+19, posY4*10+19, fi
 lbl_Score = Label(game_frame, text = "P.O.I.N.T.S\n" + str(pointsScore), font = "Courier 20 bold", bg = "#017F97", fg = "white")
 lbl_Score.pack(pady = 50, padx = 10)                         
 
+lbl_timer = Label(game_frame, text = "Temps Restant :\n" +str(timer),  font = "Courier 12 bold", bg = "#017F97", fg = "white")
+lbl_timer.pack(pady = 50, padx = 10)
 
+if timer == 110:
+    print("jon")
 """R E G L E S"""
 rules_frame = Frame(app, bg = "#2EA4BA")
 boxR = Frame(rules_frame)
