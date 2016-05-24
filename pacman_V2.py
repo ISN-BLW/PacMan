@@ -39,11 +39,11 @@ dy4 = 0
 
 
 
-#Variable pour le score et le temps
+#Variable pour le score, le temps et les vies
 pointsScore = 0
 pointsScore_aff = 0
 timer = 120
-
+vie_affiche = 3
 
 """L E S  F O N C T I O N S"""
 
@@ -53,6 +53,10 @@ def timerJeu():
     timer -= 1
     lbl_timer.config(text = "Temps Restant :\n" +str(timer))
     canvasJ.after(1000,timerJeu)
+
+    if timer == 0:
+        showinfo("ALERTE", "Vous avez perdu !\n")
+        show_menu()
     
 #Cette fonction permet d'initialiser la fonction de déplacement des fantômes.
 def fantome_True():
@@ -190,7 +194,7 @@ def update_fantomes():
     
 #Fonction de déplacement gérant les collisions avec murs + celles avec les pastilles, ainsi que les déplacements du pacman
 def depl(event, pacman, carteJeu):
-    global pointsScore, pointsScore_aff, posX, posY, Points, dx, dy
+    global pointsScore, pointsScore_aff, posX, posY, Points, dx, dy, vie_affiche
 
     
     touche = event.keysym
@@ -214,7 +218,7 @@ def depl(event, pacman, carteJeu):
     elif touche == "Down": #Bas
         dx = 0
         dy = 1
-        #On repositionne le pacman en fonction du mouvement 
+         #On repositionne le pacman en fonction du mouvement 
         canvasJ.itemconfig(pacman, start = -45, extent = 270)
     elif touche == "Left": #Gauche
         dx = -1
@@ -249,8 +253,10 @@ def depl(event, pacman, carteJeu):
         posY += dy
         posX += dx
 
+
     
     canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
+
     #Si les positions du pacman sont les memes que celles d'un fantome alors on enleve 200 points et on remet le pacman à ses coordonnées de base
     if posX == posX2 and posY == posY2 or posX == posX1 and posY == posY1 or posX == posX3 and posY == posY3 or posX == posX4 and posY == posY4:
         posY = 48
@@ -258,13 +264,24 @@ def depl(event, pacman, carteJeu):
         pointsScore_aff -= 200
         lbl_Score.config(text = "P.O.I.N.T.S\n" + str(pointsScore_aff))
         canvasJ.coords(pacman,posX*10-9, posY*10-9 ,posX*10+19 ,posY*10+19)
-    if pointsScore == 60: #242 pastilles au total
+    #systeme de vie
+     
+        vie_affiche -= 1
+        lbl_vie.config(text = "vie\n" + str(vie_affiche))
+        
+    if vie_affiche == 0 :
+        showinfo("ALERTE", "Vous avez perdue!\n")
+        app.destroy()
+        
+
+
+        
+    if pointsScore == 24000: #242 pastilles au total
 
        #on affiche un message pour alerter le joueur de sa victoire et on le fait revenir au menu du jeu
         showinfo("ALERTE", "Vous avez gagné !\n\n     Bien joué !")
-        show_menu()
-
-
+        app.destroy()
+    
  #Fonction pour créer la carte   
 def makeMap(carteJeu):
     fantome_True()
@@ -350,7 +367,7 @@ app.title("PAC MAN")
 menu_frame = Frame(app, bg = "#2EA4BA")
 boxM = Frame(menu_frame, bg = "#017F97")
 boxM.pack(padx = 350, pady = 150)
-startB = Button(boxM, text='START', command=start_game, relief = GROOVE)
+startB = Button(boxM, text='Jouer', command=start_game, relief = GROOVE)
 regleB = Button(boxM, text='Règles', command=show_rules, relief = GROOVE)
 quitterB = Button(boxM, text = "Quitter", command = app.destroy, relief = GROOVE)
 startB.pack(ipady = 15, ipadx = 15, pady = 15, padx = 15)
@@ -367,16 +384,14 @@ boxGM = Frame(gameMenu_frame, bg = "#017F97")
 boxGM.pack(padx = 300, pady = 150)
 
 #Bouton pour choisir la carte 
-bouCarte2 = Button(boxGM, text = "Carte",bd = 4, command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
-bouCarte2.pack(ipady = 20, ipadx = 20, pady = 50, padx = 50)
+bouCarte = Button(boxGM, text = "Carte",bd = 4, command = lambda carte1=cartePM.carte2: makeMap(cartePM.carte2))
+bouCarte.pack(ipady = 20, ipadx = 20, pady = 50, padx = 50)
 
 #Bouton pour retourner au menu
 return_btn = Button(boxGM, text='Retour au menu', command=show_menu, relief = GROOVE)
 return_btn.pack(ipady = 10, pady =20)
 
-#Bouton pour choisir la carte 1
-#bouCarte1 = Button(gameMenu_frame, text = "Carte 1", bd = 4, bg = "#BEBE15",  command = lambda carte1=cartePM.carte1: makeMap(cartePM.carte1))
-#bouCarte1.grid(pady = 10,ipady = 5, padx = 5,  row = 1, column = 1)
+
 
 
 
@@ -391,7 +406,7 @@ canvasJ.focus_set()
 canvasJ.bind("<Key>", lambda event: depl(event, pacman, cartePM.carte2))
 
 #Bouton pour retourner au menu
-return_btn = Button(game_frame, text='Retour au menu', command=show_menu, relief = "ridge")
+return_btn = Button(game_frame, text='Quitter', command=app.destroy, relief = "ridge")
 return_btn.pack(ipady = 10, ipadx = 10, padx = 5, pady = 20)
 
 #Création du pac man
@@ -413,8 +428,7 @@ lbl_Score.pack(pady = 50, padx = 10)
 lbl_timer = Label(game_frame, text = "Temps Restant :\n" +str(timer),  font = "Courier 12 bold", bg = "#017F97", fg = "white")
 lbl_timer.pack(pady = 50, padx = 10)
 
-if timer == 110:
-    print("jon")
+
 """R E G L E S"""
 rules_frame = Frame(app, bg = "#2EA4BA")
 boxR = Frame(rules_frame)
@@ -429,6 +443,10 @@ rules = Label(boxR, text="Le jeu commence en cliquant sur l'ecran de jeu.\n"
 rules.grid()
 return_btn = Button(rules_frame, text='Retour au menu', command=show_menu, relief = GROOVE)
 return_btn.pack(ipady = 5, ipadx = 5, pady = 10)
+
+#Label affichant les vie
+lbl_vie = Label(game_frame, text = "vie\n" + str(vie_affiche), font = "Courier 20 bold", bg = "#017F97", fg = "white")
+lbl_vie.pack(pady = 60, padx = 20)
 
  
 # Au début on commence par montrer le menu
